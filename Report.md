@@ -9,3 +9,8 @@ Below is a picture of the rendered scene with both ambient, diffuse and specular
 In the scene there are three light sources: One in the middle of the box, one in the middle of the paddle and one slightly offset from the ball.
 
 ![Task 2](./Task2.png)
+
+# Task 3
+Moved all lights to pad with some offsets to demonstrate colour blending
+
+![Task 3](./Task3.png)
