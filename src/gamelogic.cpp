@@ -392,11 +392,14 @@ void updateFrame(GLFWwindow *window)
     // Update light positions
     for (int i = 0; i < N_POINT_LIGHTS; i++)
     {
-        //TODO: Should camera transforms be here?
         glm::vec4 lightPos = pointLights[i].node->currentTransformationMatrix * glm::vec4(0.0, 0.0, 0.0, 1.0);
-        std::string uniformName = fmt::format("lightPos[{}]", i); 
-        GLuint lightPosU = shader->getUniformFromName(uniformName);
-        glUniform4fv(lightPosU, 1, glm::value_ptr(lightPos));
+        std::string posUName = fmt::format("pointLights[{}].position", i); 
+        GLuint lightPosU = shader->getUniformFromName(posUName);
+        glUniform3fv(lightPosU, 1, glm::value_ptr(glm::vec3(lightPos)));
+
+        std::string colourUName = fmt::format("pointLights[{}].colour", i); 
+        GLuint lightColourU = shader->getUniformFromName(colourUName);
+        glUniform3fv(lightColourU, 1, glm::value_ptr(pointLights[i].colour));
     }
 
     // Move and rotate various SceneNodes

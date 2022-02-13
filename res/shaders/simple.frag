@@ -1,17 +1,27 @@
 #version 430 core
 
+
 in layout(location = 0) vec3 normal_in;
 in layout(location = 1) vec2 textureCoordinates;
 in layout(location = 2) vec4 position;
 
+out vec4 color;
+
+
+struct PointLight {
+    vec3 position;
+    vec3 colour;
+};
+
 const int nPointLights = 3;
-uniform vec4 lightPos[nPointLights];
+uniform PointLight pointLights[nPointLights];
+
+
 uniform vec4 cameraPos;
 
 uniform vec3 ballPos;
 uniform float ballRadius;
 
-out vec4 color;
 
 float rand(vec2 co) { return fract(sin(dot(co.xy, vec2(12.9898,78.233))) * 43758.5453); }
 float dither(vec2 uv) { return (rand(uv)*2.0-1.0) / 256.0; }
@@ -40,18 +50,20 @@ void main()
 
     vec3 fragBallV = ballPos - vec3(position);
     for (int i = 0; i < nPointLights; i++){
+        PointLight light = pointLights[i];
+
         bool shouldReject;
-        vec3 fragLightV = vec3(lightPos[i] - position);
+        vec3 fragLightV = light.position - vec3(position);
         vec3 rejectV = reject(fragBallV, fragLightV);
 
         shouldReject = (length(rejectV) <= ballRadius) && !(length(fragLightV)<length(fragBallV)) && !(dot(fragLightV, fragBallV) < 0);
 
         float rejectFactor = float(!shouldReject);
 
-        float distToLight = length(vec3(lightPos[i] - position));
+        float distToLight = length(light.position - vec3(position));
         float attenuation = 1.0/(la + lb * distToLight + lc * pow(distToLight, 2));
 
-        vec3 lightDir = normalize(vec3(lightPos[i] - position));
+        vec3 lightDir = normalize(light.position - vec3(position));
         diffuseBrightness += rejectFactor * attenuation * max(dot(normal, lightDir), 0.0);
 
         vec3 refLD = reflect(-lightDir, normal);
