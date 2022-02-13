@@ -378,7 +378,7 @@ void updateFrame(GLFWwindow *window)
     GLuint pMatU = shader->getUniformFromName("pMat");
     glUniformMatrix4fv(pMatU, 1, GL_FALSE, glm::value_ptr(projection));
 
-    // Update lights
+    // Update light positions
     for (int i = 0; i < N_POINT_LIGHTS; i++)
     {
         //TODO: Should camera transforms be here?
@@ -432,6 +432,11 @@ void renderNode(SceneNode *node)
 {
     GLuint mMatU = shader->getUniformFromName("mMat");
     glUniformMatrix4fv(mMatU, 1, GL_FALSE, glm::value_ptr(node->currentTransformationMatrix));
+
+    // Update normal transformation matrix
+    glm::mat3 normalMat = glm::transpose(glm::inverse(glm::mat3(node->currentTransformationMatrix)));
+    GLuint normalMatU = shader->getUniformFromName("normalMat");
+    glUniformMatrix3fv(normalMatU, 1, GL_FALSE, glm::value_ptr(normalMat));
 
     switch (node->nodeType)
     {

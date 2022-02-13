@@ -12,5 +12,6 @@ float dither(vec2 uv) { return (rand(uv)*2.0-1.0) / 256.0; }
 
 void main()
 {
-    color = vec4(0.5 * normal + 0.5, 1.0);
+    
+    color = vec4(0.5 * normalize(normal) + 0.5, 1.0);
 }
