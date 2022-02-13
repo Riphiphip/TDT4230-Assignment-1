@@ -143,11 +143,17 @@ void initGame(GLFWwindow *window, CommandLineOptions gameOptions)
         pointLights[i].colour = glm::vec3(1.0);
     }
 
-    pointLights[2].node->position = glm::vec3(9.0, 0.0, 0.0);
+    pointLights[0].colour = glm::vec3(1.0,0.0,0.0);
+    pointLights[1].colour = glm::vec3(0.0,1.0,0.0);
+    pointLights[2].colour = glm::vec3(0.0,0.0,1.0);
 
-    boxNode->children.push_back(pointLights[0].node);
+    pointLights[0].node->position = glm::vec3(0.0, 5.0, 0.0);
+    pointLights[1].node->position = glm::vec3(10.0, 5.0, 0.0);
+    pointLights[2].node->position = glm::vec3(-10.0, 5.0, 0.0);
+
+    padNode->children.push_back(pointLights[0].node);
     padNode->children.push_back(pointLights[1].node);
-    ballNode->children.push_back(pointLights[2].node);
+    padNode->children.push_back(pointLights[2].node);
 
     rootNode->children.push_back(boxNode);
     rootNode->children.push_back(padNode);

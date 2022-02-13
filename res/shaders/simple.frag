@@ -32,11 +32,9 @@ const float ambientCoef = 0.1;
 const vec3 ambientColour = vec3(1.0, 1.0, 1.0);
 
 const float diffuseCoef = 0.3;
-const vec3 diffuseColour = vec3(1.0);
 
 const int shininess = 32;
 const float specularCoef = 1.0;
-const vec3 specularColour = vec3(1.0);
 
 const float la = 0.001;
 const float lb = 0.001;
@@ -45,10 +43,13 @@ const float lc = 0.001;
 void main()
 {
     vec3 normal = normalize(normal_in);
-    float diffuseBrightness = 0.0;
-    float spec = 0.0;
+
+    vec3 ambient = ambientCoef * ambientColour;
+    vec3 diffuse = vec3(0.0);
+    vec3 specular = vec3(0.0);
 
     vec3 fragBallV = ballPos - vec3(position);
+
     for (int i = 0; i < nPointLights; i++){
         PointLight light = pointLights[i];
 
@@ -64,18 +65,14 @@ void main()
         float attenuation = 1.0/(la + lb * distToLight + lc * pow(distToLight, 2));
 
         vec3 lightDir = normalize(light.position - vec3(position));
-        diffuseBrightness += rejectFactor * attenuation * max(dot(normal, lightDir), 0.0);
+        diffuse += rejectFactor * attenuation * max(dot(normal, lightDir), 0.0) * light.colour * diffuseCoef;
 
         vec3 refLD = reflect(-lightDir, normal);
         vec3 viewDir = normalize(vec3(cameraPos-position));
-        spec += rejectFactor * attenuation * pow(max(dot(viewDir, refLD),0.0), shininess);
-
+        specular += rejectFactor * attenuation * pow(max(dot(viewDir, refLD),0.0), shininess) * light.colour * specularCoef;
     }
 
 
-    vec3 ambient = ambientCoef * ambientColour;
-    vec3 diffuse = diffuseCoef * diffuseBrightness * diffuseColour;
-    vec3 specular = specularCoef * spec * specularColour;
 
     color = vec4(ambient + diffuse + specular + dither(textureCoordinates), 1.0);
 }
