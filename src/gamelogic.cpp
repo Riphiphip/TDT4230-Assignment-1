@@ -5,6 +5,7 @@
 #include <utilities/shader.hpp>
 #include <glm/vec3.hpp>
 #include <iostream>
+#include <string>
 #include <utilities/timeutils.h>
 #include <utilities/mesh.h>
 #include <utilities/shapes.h>
@@ -49,11 +50,6 @@ const glm::vec3 padDimensions(30, 3, 40);
 
 glm::vec3 ballPosition(0, ballRadius + padDimensions.y, boxDimensions.z / 2);
 glm::vec3 ballDirection(1, 1, 0.2f);
-
-// Current camera transformation
-glm::mat4 viewMat;
-// Current perspective transformation
-glm::mat4 perspectiveMat;
 
 CommandLineOptions options;
 
@@ -376,8 +372,23 @@ void updateFrame(GLFWwindow *window)
         glm::translate(-cameraPosition);
 
     // Update camera matricies
-    viewMat = cameraTransform;
-    perspectiveMat = projection;
+    GLuint vMatU = shader->getUniformFromName("vMat");
+    glUniformMatrix4fv(vMatU, 1, GL_FALSE, glm::value_ptr(cameraTransform));
+
+    GLuint pMatU = shader->getUniformFromName("pMat");
+    glUniformMatrix4fv(pMatU, 1, GL_FALSE, glm::value_ptr(projection));
+
+    // Update lights
+    for (int i = 0; i < N_POINT_LIGHTS; i++)
+    {
+        //TODO: Should camera transforms be here?
+        glm::vec4 lightPos = projection * cameraTransform * pointLights[i].node->currentTransformationMatrix * glm::vec4(0.0, 0.0, 0.0, 1.0);
+        std::string uniformName = "lightPos[";
+        uniformName.append(std::to_string(i));
+        uniformName.append("]");
+        GLuint lightPosU = shader->getUniformFromName(uniformName);
+        glUniform4fv(lightPosU, 1, glm::value_ptr(lightPos));
+    }
 
     // Move and rotate various SceneNodes
     boxNode->position = {0, -10, -80};
@@ -448,12 +459,6 @@ void renderFrame(GLFWwindow *window)
     int windowWidth, windowHeight;
     glfwGetWindowSize(window, &windowWidth, &windowHeight);
     glViewport(0, 0, windowWidth, windowHeight);
-
-    GLuint vMatU = shader->getUniformFromName("vMat");
-    glUniformMatrix4fv(vMatU, 1, GL_FALSE, glm::value_ptr(viewMat));
-
-    GLuint pMatU = shader->getUniformFromName("pMat");
-    glUniformMatrix4fv(pMatU, 1, GL_FALSE, glm::value_ptr(perspectiveMat));
 
     renderNode(rootNode);
 }
