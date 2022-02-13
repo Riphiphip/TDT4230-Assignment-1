@@ -371,12 +371,15 @@ void updateFrame(GLFWwindow *window)
         glm::rotate(lookRotation, glm::vec3(0, 1, 0)) *
         glm::translate(-cameraPosition);
 
-    // Update camera matricies
+    // Update camera uniforms
     GLuint vMatU = shader->getUniformFromName("vMat");
     glUniformMatrix4fv(vMatU, 1, GL_FALSE, glm::value_ptr(cameraTransform));
 
     GLuint pMatU = shader->getUniformFromName("pMat");
     glUniformMatrix4fv(pMatU, 1, GL_FALSE, glm::value_ptr(projection));
+
+    GLuint cameraPosU = shader->getUniformFromName("cameraPos");
+    glUniform4fv(cameraPosU, 1, glm::value_ptr(cameraPosition));
 
     // Update light positions
     for (int i = 0; i < N_POINT_LIGHTS; i++)
