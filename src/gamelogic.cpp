@@ -382,7 +382,7 @@ void updateFrame(GLFWwindow *window)
     for (int i = 0; i < N_POINT_LIGHTS; i++)
     {
         //TODO: Should camera transforms be here?
-        glm::vec4 lightPos = projection * cameraTransform * pointLights[i].node->currentTransformationMatrix * glm::vec4(0.0, 0.0, 0.0, 1.0);
+        glm::vec4 lightPos = pointLights[i].node->currentTransformationMatrix * glm::vec4(0.0, 0.0, 0.0, 1.0);
         std::string uniformName = "lightPos[";
         uniformName.append(std::to_string(i));
         uniformName.append("]");
