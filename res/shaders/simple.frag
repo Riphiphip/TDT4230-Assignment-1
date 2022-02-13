@@ -19,9 +19,13 @@ const vec3 ambientColour = vec3(1.0, 1.0, 1.0);
 const float diffuseCoef = 0.3;
 const vec3 diffuseColour = vec3(1.0);
 
-const int shininess = 256;
+const int shininess = 32;
 const float specularCoef = 1.0;
 const vec3 specularColour = vec3(1.0);
+
+const float la = 0.001;
+const float lb = 0.001;
+const float lc = 0.001;
 
 void main()
 {
@@ -29,18 +33,21 @@ void main()
     float diffuseBrightness = 0.0;
     float spec = 0.0;
     for (int i = 0; i < nPointLights; i++){
+        float distToLight = length(vec3(lightPos[i] - position));
+        float attenuation = 1.0/(la + lb * distToLight + lc * pow(distToLight, 2));
+
         vec3 lightDir = normalize(vec3(lightPos[i] - position));
-        diffuseBrightness += max(dot(normal, lightDir), 0.0);
+        diffuseBrightness += attenuation * max(dot(normal, lightDir), 0.0);
 
         vec3 refLD = reflect(-lightDir, normal);
-        // Coordinates are in eye-space; 
         vec3 viewDir = normalize(vec3(cameraPos-position));
-        spec += pow(max(dot(viewDir, refLD),0.0), shininess);
+        spec += attenuation * pow(max(dot(viewDir, refLD),0.0), shininess);
     }
+
 
     vec3 ambient = ambientCoef * ambientColour;
     vec3 diffuse = diffuseCoef * diffuseBrightness * diffuseColour;
     vec3 specular = specularCoef * spec * specularColour;
 
-    color = vec4(ambient + diffuse + specular, 1.0);
+    color = vec4(ambient + diffuse + specular + dither(textureCoordinates), 1.0);
 }
