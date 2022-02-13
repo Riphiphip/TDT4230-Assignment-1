@@ -143,6 +143,8 @@ void initGame(GLFWwindow *window, CommandLineOptions gameOptions)
         pointLights[i].colour = glm::vec3(1.0);
     }
 
+    pointLights[2].node->position = glm::vec3(9.0, 0.0, 0.0);
+
     boxNode->children.push_back(pointLights[0].node);
     padNode->children.push_back(pointLights[1].node);
     ballNode->children.push_back(pointLights[2].node);
@@ -161,6 +163,9 @@ void initGame(GLFWwindow *window, CommandLineOptions gameOptions)
     ballNode->VAOIndexCount = sphere.indices.size();
 
     getTimeDeltaSeconds();
+
+    GLuint ballRadiusU = shader->getUniformFromName("ballRadius");
+    glUniform1f(ballRadiusU, ballRadius);
 
     std::cout << fmt::format("Initialized scene with {} SceneNodes.", totalChildren(rootNode)) << std::endl;
 
@@ -360,6 +365,9 @@ void updateFrame(GLFWwindow *window)
         }
     }
 
+    GLuint ballPosU = shader->getUniformFromName("ballPos");
+    glUniform3fv(ballPosU, 1, glm::value_ptr(ballPosition));
+
     glm::mat4 projection = glm::perspective(glm::radians(80.0f), float(windowWidth) / float(windowHeight), 0.1f, 350.f);
 
     glm::vec3 cameraPosition = glm::vec3(0, 2, -20);
@@ -386,9 +394,7 @@ void updateFrame(GLFWwindow *window)
     {
         //TODO: Should camera transforms be here?
         glm::vec4 lightPos = pointLights[i].node->currentTransformationMatrix * glm::vec4(0.0, 0.0, 0.0, 1.0);
-        std::string uniformName = "lightPos[";
-        uniformName.append(std::to_string(i));
-        uniformName.append("]");
+        std::string uniformName = fmt::format("lightPos[{}]", i); 
         GLuint lightPosU = shader->getUniformFromName(uniformName);
         glUniform4fv(lightPosU, 1, glm::value_ptr(lightPos));
     }
