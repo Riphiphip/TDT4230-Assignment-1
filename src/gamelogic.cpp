@@ -22,6 +22,8 @@
 #include "utilities/imageLoader.hpp"
 #include "utilities/glfont.h"
 
+#include "textures.h"
+
 enum KeyFrameAction
 {
     BOTTOM,
@@ -40,6 +42,8 @@ SceneNode *rootNode;
 SceneNode *boxNode;
 SceneNode *ballNode;
 SceneNode *padNode;
+
+SceneNode *textNode;
 
 double ballRadius = 3.0f;
 
@@ -139,6 +143,7 @@ void initGame(GLFWwindow *window, CommandLineOptions gameOptions)
     padNode = createSceneNode();
     ballNode = createSceneNode();
 
+
     for (int i = 0; i < N_POINT_LIGHTS; i++)
     {
         pointLights[i].node = createSceneNode();
@@ -170,6 +175,16 @@ void initGame(GLFWwindow *window, CommandLineOptions gameOptions)
 
     ballNode->vertexArrayObjectID = ballVAO;
     ballNode->VAOIndexCount = sphere.indices.size();
+
+    textNode = createSceneNode();
+    Mesh textMesh = generateTextGeometryBuffer("Hello OpenGL!", 39.0/29.0, 13*29);
+
+    PNGImage image = loadPNGFile("./res/textures/charmap.png");
+    Texture textTexture = textureFromPng(&image);
+    textNode->nodeType = GEOMETRY_2D;
+    textNode->imageTexture = textTexture;
+
+    rootNode->children.push_back(textNode);
 
     getTimeDeltaSeconds();
 
