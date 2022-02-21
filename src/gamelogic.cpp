@@ -373,9 +373,20 @@ void updateFrame(GLFWwindow *window)
             }
         }
     }
+    // Move and rotate various SceneNodes
+    boxNode->position = {0, -10, -80};
+
+    ballNode->position = ballPosition;
+    ballNode->scale = glm::vec3(ballRadius);
+    ballNode->rotation = {0, totalElapsedTime * 2, 0};
+
+    padNode->position = {
+        boxNode->position.x - (boxDimensions.x / 2) + (padDimensions.x / 2) + (1 - padPositionX) * (boxDimensions.x - padDimensions.x),
+        boxNode->position.y - (boxDimensions.y / 2) + (padDimensions.y / 2),
+        boxNode->position.z - (boxDimensions.z / 2) + (padDimensions.z / 2) + (1 - padPositionZ) * (boxDimensions.z - padDimensions.z)};
 
     updateNodeTransformations(rootNode, glm::mat4(1.0));
-    
+
     GLuint ballPosU = shader->getUniformFromName("ballPos");
     glUniform3fv(ballPosU, 1, glm::value_ptr(ballPosition));
 
@@ -413,17 +424,6 @@ void updateFrame(GLFWwindow *window)
         glUniform3fv(lightColourU, 1, glm::value_ptr(pointLights[i].colour));
     }
 
-    // Move and rotate various SceneNodes
-    boxNode->position = {0, -10, -80};
-
-    ballNode->position = ballPosition;
-    ballNode->scale = glm::vec3(ballRadius);
-    ballNode->rotation = {0, totalElapsedTime * 2, 0};
-
-    padNode->position = {
-        boxNode->position.x - (boxDimensions.x / 2) + (padDimensions.x / 2) + (1 - padPositionX) * (boxDimensions.x - padDimensions.x),
-        boxNode->position.y - (boxDimensions.y / 2) + (padDimensions.y / 2),
-        boxNode->position.z - (boxDimensions.z / 2) + (padDimensions.z / 2) + (1 - padPositionZ) * (boxDimensions.z - padDimensions.z)};
 
 }
 
