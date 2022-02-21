@@ -374,6 +374,8 @@ void updateFrame(GLFWwindow *window)
         }
     }
 
+    updateNodeTransformations(rootNode, glm::mat4(1.0));
+    
     GLuint ballPosU = shader->getUniformFromName("ballPos");
     glUniform3fv(ballPosU, 1, glm::value_ptr(ballPosition));
 
@@ -423,7 +425,6 @@ void updateFrame(GLFWwindow *window)
         boxNode->position.y - (boxDimensions.y / 2) + (padDimensions.y / 2),
         boxNode->position.z - (boxDimensions.z / 2) + (padDimensions.z / 2) + (1 - padPositionZ) * (boxDimensions.z - padDimensions.z)};
 
-    updateNodeTransformations(rootNode, glm::mat4(1.0));
 }
 
 void updateNodeTransformations(SceneNode *node, glm::mat4 transformationThusFar)
