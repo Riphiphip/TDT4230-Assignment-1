@@ -202,7 +202,6 @@ void initGame(GLFWwindow *window, CommandLineOptions gameOptions)
 
 void updateFrame(GLFWwindow *window)
 {
-    shader3D->activate();
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     double timeDelta = getTimeDeltaSeconds();
@@ -407,6 +406,8 @@ void updateFrame(GLFWwindow *window)
 
     updateNodeTransformations(rootNode, glm::mat4(1.0));
 
+    shader3D->activate();
+    
     GLuint ballPosU = shader3D->getUniformFromName("ballPos");
     glUniform3fv(ballPosU, 1, glm::value_ptr(ballPosition));
 
