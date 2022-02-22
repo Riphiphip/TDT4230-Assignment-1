@@ -144,7 +144,6 @@ void initGame(GLFWwindow *window, CommandLineOptions gameOptions)
     padNode = createSceneNode();
     ballNode = createSceneNode();
 
-
     for (int i = 0; i < N_POINT_LIGHTS; i++)
     {
         pointLights[i].node = createSceneNode();
@@ -152,9 +151,9 @@ void initGame(GLFWwindow *window, CommandLineOptions gameOptions)
         pointLights[i].colour = glm::vec3(1.0);
     }
 
-    pointLights[0].colour = glm::vec3(1.0,0.0,0.0);
-    pointLights[1].colour = glm::vec3(0.0,1.0,0.0);
-    pointLights[2].colour = glm::vec3(0.0,0.0,1.0);
+    pointLights[0].colour = glm::vec3(1.0, 0.0, 0.0);
+    pointLights[1].colour = glm::vec3(0.0, 1.0, 0.0);
+    pointLights[2].colour = glm::vec3(0.0, 0.0, 1.0);
 
     pointLights[0].node->position = glm::vec3(0.0, 5.0, 0.0);
     pointLights[1].node->position = glm::vec3(10.0, 5.0, 0.0);
@@ -182,7 +181,7 @@ void initGame(GLFWwindow *window, CommandLineOptions gameOptions)
     shader2D->activate();
 
     textNode = createSceneNode();
-    Mesh textMesh = generateTextGeometryBuffer("Hello OpenGL!", 39.0/29.0, 13*29);
+    Mesh textMesh = generateTextGeometryBuffer("Hello OpenGL!", 39.0 / 29.0, 13 * 29);
 
     PNGImage image = loadPNGFile("../res/textures/charmap.png");
     Texture textTexture = textureFromPng(&image);
@@ -435,16 +434,14 @@ void updateFrame(GLFWwindow *window)
     for (int i = 0; i < N_POINT_LIGHTS; i++)
     {
         glm::vec4 lightPos = pointLights[i].node->currentTransformationMatrix * glm::vec4(0.0, 0.0, 0.0, 1.0);
-        std::string posUName = fmt::format("pointLights[{}].position", i); 
+        std::string posUName = fmt::format("pointLights[{}].position", i);
         GLuint lightPosU = shader3D->getUniformFromName(posUName);
         glUniform3fv(lightPosU, 1, glm::value_ptr(glm::vec3(lightPos)));
 
-        std::string colourUName = fmt::format("pointLights[{}].colour", i); 
+        std::string colourUName = fmt::format("pointLights[{}].colour", i);
         GLuint lightColourU = shader3D->getUniformFromName(colourUName);
         glUniform3fv(lightColourU, 1, glm::value_ptr(pointLights[i].colour));
     }
-
-
 }
 
 void updateNodeTransformations(SceneNode *node, glm::mat4 transformationThusFar)
@@ -462,6 +459,14 @@ void updateNodeTransformations(SceneNode *node, glm::mat4 transformationThusFar)
         break;
     case SPOT_LIGHT:
         break;
+    case GEOMETRY_2D:
+    {
+        break;
+    }
+    case GEOMETRY_NORMAL_MAPPED:
+    {
+        break;
+    }
     }
 
     for (SceneNode *child : node->children)
@@ -470,34 +475,48 @@ void updateNodeTransformations(SceneNode *node, glm::mat4 transformationThusFar)
     }
 }
 
-void renderNode(SceneNode *node)
+void renderNode(SceneNode *node, int renderMask)
 {
-    GLuint mMatU = shader3D->getUniformFromName("mMat");
-    glUniformMatrix4fv(mMatU, 1, GL_FALSE, glm::value_ptr(node->currentTransformationMatrix));
-
-    // Update normal transformation matrix
-    glm::mat3 normalMat = glm::transpose(glm::inverse(glm::mat3(node->currentTransformationMatrix)));
-    GLuint normalMatU = shader3D->getUniformFromName("normalMat");
-    glUniformMatrix3fv(normalMatU, 1, GL_FALSE, glm::value_ptr(normalMat));
-
-    switch (node->nodeType)
+    if ((node->nodeType & renderMask) != 0)
     {
-    case GEOMETRY:
-        if (node->vertexArrayObjectID != -1)
+
+        GLuint mMatU = shader3D->getUniformFromName("mMat");
+        glUniformMatrix4fv(mMatU, 1, GL_FALSE, glm::value_ptr(node->currentTransformationMatrix));
+
+        // Update normal transformation matrix
+        glm::mat3 normalMat = glm::transpose(glm::inverse(glm::mat3(node->currentTransformationMatrix)));
+        GLuint normalMatU = shader3D->getUniformFromName("normalMat");
+        glUniformMatrix3fv(normalMatU, 1, GL_FALSE, glm::value_ptr(normalMat));
+
+        switch (node->nodeType)
         {
-            glBindVertexArray(node->vertexArrayObjectID);
-            glDrawElements(GL_TRIANGLES, node->VAOIndexCount, GL_UNSIGNED_INT, nullptr);
+        case GEOMETRY:
+        {
+            if (node->vertexArrayObjectID != -1)
+            {
+                glBindVertexArray(node->vertexArrayObjectID);
+                glDrawElements(GL_TRIANGLES, node->VAOIndexCount, GL_UNSIGNED_INT, nullptr);
+            }
+            break;
         }
-        break;
-    case POINT_LIGHT:
-        break;
-    case SPOT_LIGHT:
-        break;
+        case POINT_LIGHT:
+            break;
+        case SPOT_LIGHT:
+            break;
+        case GEOMETRY_2D:
+        {
+            break;
+        }
+        case GEOMETRY_NORMAL_MAPPED:
+        {
+            break;
+        }
+        }
     }
 
     for (SceneNode *child : node->children)
     {
-        renderNode(child);
+        renderNode(child, renderMask);
     }
 }
 
@@ -507,5 +526,5 @@ void renderFrame(GLFWwindow *window)
     glfwGetWindowSize(window, &windowWidth, &windowHeight);
     glViewport(0, 0, windowWidth, windowHeight);
     shader3D->activate();
-    renderNode(rootNode);
+    renderNode(rootNode, GEOMETRY);
 }
