@@ -50,6 +50,7 @@ double ballRadius = 3.0f;
 // These are heap allocated, because they should not be initialised at the start of the program
 sf::SoundBuffer *buffer;
 Gloom::Shader *shader3D;
+Gloom::Shader *shader2D;
 sf::Sound *sound;
 
 const glm::vec3 boxDimensions(180, 90, 90);
@@ -175,6 +176,10 @@ void initGame(GLFWwindow *window, CommandLineOptions gameOptions)
 
     ballNode->vertexArrayObjectID = ballVAO;
     ballNode->VAOIndexCount = sphere.indices.size();
+
+    shader2D = new Gloom::Shader();
+    shader2D->makeBasicShader("../res/shaders/geometry2D.vert", "../res/shaders/geometry2D.frag");
+    shader2D->activate();
 
     textNode = createSceneNode();
     Mesh textMesh = generateTextGeometryBuffer("Hello OpenGL!", 39.0/29.0, 13*29);
@@ -501,6 +506,6 @@ void renderFrame(GLFWwindow *window)
     int windowWidth, windowHeight;
     glfwGetWindowSize(window, &windowWidth, &windowHeight);
     glViewport(0, 0, windowWidth, windowHeight);
-
+    shader3D->activate();
     renderNode(rootNode);
 }
