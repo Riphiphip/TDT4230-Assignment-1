@@ -13,6 +13,8 @@
 #include <chrono>
 #include <fstream>
 
+#include "textures.h"
+
 enum SceneNodeType {
 	GEOMETRY, POINT_LIGHT, SPOT_LIGHT, GEOMETRY_2D, GEOMETRY_NORMAL_MAPPED
 };

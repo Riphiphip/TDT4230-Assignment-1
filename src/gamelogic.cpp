@@ -179,7 +179,7 @@ void initGame(GLFWwindow *window, CommandLineOptions gameOptions)
     textNode = createSceneNode();
     Mesh textMesh = generateTextGeometryBuffer("Hello OpenGL!", 39.0/29.0, 13*29);
 
-    PNGImage image = loadPNGFile("./res/textures/charmap.png");
+    PNGImage image = loadPNGFile("../res/textures/charmap.png");
     Texture textTexture = textureFromPng(&image);
     textNode->nodeType = GEOMETRY_2D;
     textNode->imageTexture = textTexture;
