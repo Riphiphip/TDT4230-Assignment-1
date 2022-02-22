@@ -9,5 +9,6 @@ out vec4 color;
 void main()
 {
 
-    color = texture(imageSampler, uv);
+    // color = texture(imageSampler, uv);
+    color = vec4(uv, 1.0, 1.0);
 }
