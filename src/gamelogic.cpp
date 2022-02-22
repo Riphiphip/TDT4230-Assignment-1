@@ -49,7 +49,7 @@ double ballRadius = 3.0f;
 
 // These are heap allocated, because they should not be initialised at the start of the program
 sf::SoundBuffer *buffer;
-Gloom::Shader *shader;
+Gloom::Shader *shader3D;
 sf::Sound *sound;
 
 const glm::vec3 boxDimensions(180, 90, 90);
@@ -123,9 +123,9 @@ void initGame(GLFWwindow *window, CommandLineOptions gameOptions)
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
     glfwSetCursorPosCallback(window, mouseCallback);
 
-    shader = new Gloom::Shader();
-    shader->makeBasicShader("../res/shaders/simple.vert", "../res/shaders/simple.frag");
-    shader->activate();
+    shader3D = new Gloom::Shader();
+    shader3D->makeBasicShader("../res/shaders/simple.vert", "../res/shaders/simple.frag");
+    shader3D->activate();
 
     // Create meshes
     Mesh pad = cube(padDimensions, glm::vec2(30, 40), true);
@@ -188,7 +188,7 @@ void initGame(GLFWwindow *window, CommandLineOptions gameOptions)
 
     getTimeDeltaSeconds();
 
-    GLuint ballRadiusU = shader->getUniformFromName("ballRadius");
+    GLuint ballRadiusU = shader3D->getUniformFromName("ballRadius");
     glUniform1f(ballRadiusU, ballRadius);
 
     std::cout << fmt::format("Initialized scene with {} SceneNodes.", totalChildren(rootNode)) << std::endl;
@@ -402,7 +402,7 @@ void updateFrame(GLFWwindow *window)
 
     updateNodeTransformations(rootNode, glm::mat4(1.0));
 
-    GLuint ballPosU = shader->getUniformFromName("ballPos");
+    GLuint ballPosU = shader3D->getUniformFromName("ballPos");
     glUniform3fv(ballPosU, 1, glm::value_ptr(ballPosition));
 
     glm::mat4 projection = glm::perspective(glm::radians(80.0f), float(windowWidth) / float(windowHeight), 0.1f, 350.f);
@@ -417,13 +417,13 @@ void updateFrame(GLFWwindow *window)
         glm::translate(-cameraPosition);
 
     // Update camera uniforms
-    GLuint vMatU = shader->getUniformFromName("vMat");
+    GLuint vMatU = shader3D->getUniformFromName("vMat");
     glUniformMatrix4fv(vMatU, 1, GL_FALSE, glm::value_ptr(cameraTransform));
 
-    GLuint pMatU = shader->getUniformFromName("pMat");
+    GLuint pMatU = shader3D->getUniformFromName("pMat");
     glUniformMatrix4fv(pMatU, 1, GL_FALSE, glm::value_ptr(projection));
 
-    GLuint cameraPosU = shader->getUniformFromName("cameraPos");
+    GLuint cameraPosU = shader3D->getUniformFromName("cameraPos");
     glUniform4fv(cameraPosU, 1, glm::value_ptr(cameraPosition));
 
     // Update light positions
@@ -431,11 +431,11 @@ void updateFrame(GLFWwindow *window)
     {
         glm::vec4 lightPos = pointLights[i].node->currentTransformationMatrix * glm::vec4(0.0, 0.0, 0.0, 1.0);
         std::string posUName = fmt::format("pointLights[{}].position", i); 
-        GLuint lightPosU = shader->getUniformFromName(posUName);
+        GLuint lightPosU = shader3D->getUniformFromName(posUName);
         glUniform3fv(lightPosU, 1, glm::value_ptr(glm::vec3(lightPos)));
 
         std::string colourUName = fmt::format("pointLights[{}].colour", i); 
-        GLuint lightColourU = shader->getUniformFromName(colourUName);
+        GLuint lightColourU = shader3D->getUniformFromName(colourUName);
         glUniform3fv(lightColourU, 1, glm::value_ptr(pointLights[i].colour));
     }
 
@@ -467,12 +467,12 @@ void updateNodeTransformations(SceneNode *node, glm::mat4 transformationThusFar)
 
 void renderNode(SceneNode *node)
 {
-    GLuint mMatU = shader->getUniformFromName("mMat");
+    GLuint mMatU = shader3D->getUniformFromName("mMat");
     glUniformMatrix4fv(mMatU, 1, GL_FALSE, glm::value_ptr(node->currentTransformationMatrix));
 
     // Update normal transformation matrix
     glm::mat3 normalMat = glm::transpose(glm::inverse(glm::mat3(node->currentTransformationMatrix)));
-    GLuint normalMatU = shader->getUniformFromName("normalMat");
+    GLuint normalMatU = shader3D->getUniformFromName("normalMat");
     glUniformMatrix3fv(normalMatU, 1, GL_FALSE, glm::value_ptr(normalMat));
 
     switch (node->nodeType)
