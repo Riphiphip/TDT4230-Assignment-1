@@ -176,6 +176,10 @@ void initGame(GLFWwindow *window, CommandLineOptions gameOptions)
     ballNode->vertexArrayObjectID = ballVAO;
     ballNode->VAOIndexCount = sphere.indices.size();
 
+    GLuint ballRadiusU = shader3D->getUniformFromName("ballRadius");
+    glUniform1f(ballRadiusU, ballRadius);
+
+
     shader2D = new Gloom::Shader();
     shader2D->makeBasicShader("../res/shaders/geometry2D.vert", "../res/shaders/geometry2D.frag");
     shader2D->activate();
@@ -192,8 +196,6 @@ void initGame(GLFWwindow *window, CommandLineOptions gameOptions)
 
     getTimeDeltaSeconds();
 
-    GLuint ballRadiusU = shader3D->getUniformFromName("ballRadius");
-    glUniform1f(ballRadiusU, ballRadius);
 
     std::cout << fmt::format("Initialized scene with {} SceneNodes.", totalChildren(rootNode)) << std::endl;
 
@@ -407,7 +409,7 @@ void updateFrame(GLFWwindow *window)
     updateNodeTransformations(rootNode, glm::mat4(1.0));
 
     shader3D->activate();
-    
+
     GLuint ballPosU = shader3D->getUniformFromName("ballPos");
     glUniform3fv(ballPosU, 1, glm::value_ptr(ballPosition));
 
@@ -444,6 +446,12 @@ void updateFrame(GLFWwindow *window)
         GLuint lightColourU = shader3D->getUniformFromName(colourUName);
         glUniform3fv(lightColourU, 1, glm::value_ptr(pointLights[i].colour));
     }
+
+
+    shader2D->activate();
+    glm::mat4 ortho = glm::ortho(0.0f, float(windowWidth), 0.0f, float(windowHeight));
+    GLuint orthoU = shader2D->getUniformFromName("ortho");
+    glUniformMatrix4fv(orthoU, 1, GL_FALSE, glm::value_ptr(ortho));
 }
 
 void updateNodeTransformations(SceneNode *node, glm::mat4 transformationThusFar)
