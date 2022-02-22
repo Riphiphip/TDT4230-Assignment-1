@@ -179,7 +179,6 @@ void initGame(GLFWwindow *window, CommandLineOptions gameOptions)
     GLuint ballRadiusU = shader3D->getUniformFromName("ballRadius");
     glUniform1f(ballRadiusU, ballRadius);
 
-
     shader2D = new Gloom::Shader();
     shader2D->makeBasicShader("../res/shaders/geometry2D.vert", "../res/shaders/geometry2D.frag");
     shader2D->activate();
@@ -195,7 +194,6 @@ void initGame(GLFWwindow *window, CommandLineOptions gameOptions)
     rootNode->children.push_back(textNode);
 
     getTimeDeltaSeconds();
-
 
     std::cout << fmt::format("Initialized scene with {} SceneNodes.", totalChildren(rootNode)) << std::endl;
 
@@ -447,7 +445,6 @@ void updateFrame(GLFWwindow *window)
         glUniform3fv(lightColourU, 1, glm::value_ptr(pointLights[i].colour));
     }
 
-
     shader2D->activate();
     glm::mat4 ortho = glm::ortho(0.0f, float(windowWidth), 0.0f, float(windowHeight));
     GLuint orthoU = shader2D->getUniformFromName("ortho");
@@ -490,23 +487,21 @@ void renderNode(SceneNode *node, int renderMask)
     if ((node->nodeType & renderMask) != 0)
     {
 
-        GLuint mMatU = shader3D->getUniformFromName("mMat");
-        glUniformMatrix4fv(mMatU, 1, GL_FALSE, glm::value_ptr(node->currentTransformationMatrix));
-
-        // Update normal transformation matrix
-        glm::mat3 normalMat = glm::transpose(glm::inverse(glm::mat3(node->currentTransformationMatrix)));
-        GLuint normalMatU = shader3D->getUniformFromName("normalMat");
-        glUniformMatrix3fv(normalMatU, 1, GL_FALSE, glm::value_ptr(normalMat));
-
         switch (node->nodeType)
         {
         case GEOMETRY:
         {
-            if (node->vertexArrayObjectID != -1)
-            {
-                glBindVertexArray(node->vertexArrayObjectID);
-                glDrawElements(GL_TRIANGLES, node->VAOIndexCount, GL_UNSIGNED_INT, nullptr);
-            }
+            if (node->vertexArrayObjectID == -1)
+                break;
+            GLuint mMatU = shader3D->getUniformFromName("mMat");
+            glUniformMatrix4fv(mMatU, 1, GL_FALSE, glm::value_ptr(node->currentTransformationMatrix));
+
+            // Update normal transformation matrix
+            glm::mat3 normalMat = glm::transpose(glm::inverse(glm::mat3(node->currentTransformationMatrix)));
+            GLuint normalMatU = shader3D->getUniformFromName("normalMat");
+            glUniformMatrix3fv(normalMatU, 1, GL_FALSE, glm::value_ptr(normalMat));
+            glBindVertexArray(node->vertexArrayObjectID);
+            glDrawElements(GL_TRIANGLES, node->VAOIndexCount, GL_UNSIGNED_INT, nullptr);
             break;
         }
         case POINT_LIGHT:
@@ -515,6 +510,12 @@ void renderNode(SceneNode *node, int renderMask)
             break;
         case GEOMETRY_2D:
         {
+            if (node->vertexArrayObjectID == -1)
+                break;
+            GLuint mMatU = shader2D->getUniformFromName("mMat");
+            glUniformMatrix4fv(mMatU, 1, GL_FALSE, glm::value_ptr(node->currentTransformationMatrix));
+            glBindVertexArray(node->vertexArrayObjectID);
+            glDrawElements(GL_TRIANGLES, node->VAOIndexCount, GL_UNSIGNED_INT, nullptr);
             break;
         }
         case GEOMETRY_NORMAL_MAPPED:
