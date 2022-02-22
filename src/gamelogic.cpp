@@ -202,6 +202,7 @@ void initGame(GLFWwindow *window, CommandLineOptions gameOptions)
 
 void updateFrame(GLFWwindow *window)
 {
+    shader3D->activate();
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     double timeDelta = getTimeDeltaSeconds();
@@ -527,4 +528,6 @@ void renderFrame(GLFWwindow *window)
     glViewport(0, 0, windowWidth, windowHeight);
     shader3D->activate();
     renderNode(rootNode, GEOMETRY);
+    shader2D->activate();
+    renderNode(rootNode, GEOMETRY_2D);
 }
