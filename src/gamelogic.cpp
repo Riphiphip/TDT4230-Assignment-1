@@ -191,6 +191,7 @@ void initGame(GLFWwindow *window, CommandLineOptions gameOptions)
     textNode->nodeType = GEOMETRY_2D;
     textNode->imageTexture = textTexture;
     textNode->vertexArrayObjectID = generateBuffer(textMesh);
+    textNode->VAOIndexCount = textMesh.indices.size();
     textNode->position = glm::vec3(0.0, 0.0, 0.0);
 
     rootNode->children.push_back(textNode);
@@ -448,7 +449,7 @@ void updateFrame(GLFWwindow *window)
     }
 
     shader2D->activate();
-    glm::mat4 ortho = glm::ortho(0.0f, float(windowWidth), 0.0f, float(windowHeight));
+    glm::mat4 ortho = glm::ortho(0.0f, float(windowWidth), 0.0f, float(windowHeight), -1.0f, 1.0f);
     GLuint orthoU = shader2D->getUniformFromName("ortho");
     glUniformMatrix4fv(orthoU, 1, GL_FALSE, glm::value_ptr(ortho));
 }

@@ -4,7 +4,6 @@ uniform mat4 ortho;
 uniform mat4 mMat;
 
 in layout(location = 0) vec3 position;
-in layout(location = 1) vec3 normal_in;
 in layout(location = 2) vec2 textureCoordinates_in;
 
 
