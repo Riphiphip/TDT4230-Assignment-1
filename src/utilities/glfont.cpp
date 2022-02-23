@@ -35,8 +35,8 @@ Mesh generateTextGeometryBuffer(std::string text, float characterHeightOverWidth
         mesh.indices.at(6 * i + 4) = 4 * i + 2;
         mesh.indices.at(6 * i + 5) = 4 * i + 3;
 
-        float texXStep = characterWidth / totalTextWidth;
-        float baseTexX = i * texXStep;
+        float texXStep = 1.0 / 128.0 ;
+        float baseTexX = texXStep * text.at(i);
 
         mesh.textureCoordinates.at(4 * i + 0) = glm::vec2(baseTexX, 0.0);            // Lower left
         mesh.textureCoordinates.at(4 * i + 1) = glm::vec2(baseTexX + texXStep, 0.0); // Lower right
