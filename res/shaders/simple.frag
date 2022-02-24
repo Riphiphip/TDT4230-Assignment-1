@@ -22,6 +22,11 @@ uniform vec4 cameraPos;
 uniform vec3 ballPos;
 uniform float ballRadius;
 
+uniform bool isTextured;
+layout(binding = 0) uniform sampler2D imageSampler;
+
+uniform bool isNormalMapped;
+layout(binding = 1) uniform sampler2D normalMapSampler;
 
 float rand(vec2 co) { return fract(sin(dot(co.xy, vec2(12.9898,78.233))) * 43758.5453); }
 float dither(vec2 uv) { return (rand(uv)*2.0-1.0) / 256.0; }
@@ -42,7 +47,7 @@ const float lc = 0.001;
 
 void main()
 {
-    vec3 normal = normalize(normal_in);
+    vec3 normal = isNormalMapped ? texture(normalMapSampler, textureCoordinates).xyz : normalize(normal_in);
 
     vec3 ambient = ambientCoef * ambientColour;
     vec3 diffuse = vec3(0.0);
@@ -65,6 +70,7 @@ void main()
         float attenuation = 1.0/(la + lb * distToLight + lc * pow(distToLight, 2));
 
         vec3 lightDir = normalize(light.position - vec3(position));
+        
         diffuse += rejectFactor * attenuation * max(dot(normal, lightDir), 0.0) * light.colour * diffuseCoef;
 
         vec3 refLD = reflect(-lightDir, normal);

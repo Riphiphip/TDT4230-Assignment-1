@@ -140,9 +140,21 @@ void initGame(GLFWwindow *window, CommandLineOptions gameOptions)
 
     // Construct scene
     rootNode = createSceneNode();
-    boxNode = createSceneNode();
     padNode = createSceneNode();
     ballNode = createSceneNode();
+    
+    boxNode = createSceneNode();
+    boxNode->nodeType = GEOMETRY_NORMAL_MAPPED;
+
+    PNGImage boxImage = loadPNGFile("../res/textures/Brick03_col.png");
+    Texture boxDiffuseTexture = textureFromPng(&boxImage);
+
+    PNGImage boxNormalMap = loadPNGFile("../res/textures/Brick03_nrm.png");
+    Texture boxNormalMapTexture = textureFromPng(&boxNormalMap);
+
+    boxNode->imageTexture = boxDiffuseTexture;
+    boxNode->normalMapTexture = boxNormalMapTexture;
+
 
     for (int i = 0; i < N_POINT_LIGHTS; i++)
     {
@@ -503,6 +515,9 @@ void renderNode(SceneNode *node, int renderMask)
             glm::mat3 normalMat = glm::transpose(glm::inverse(glm::mat3(node->currentTransformationMatrix)));
             GLuint normalMatU = shader3D->getUniformFromName("normalMat");
             glUniformMatrix3fv(normalMatU, 1, GL_FALSE, glm::value_ptr(normalMat));
+
+            GLuint isNormalMappedU = shader3D->getUniformFromName("isNormalMapped");
+            glUniform1i(isNormalMappedU, GL_FALSE);
             glBindVertexArray(node->vertexArrayObjectID);
             glDrawElements(GL_TRIANGLES, node->VAOIndexCount, GL_UNSIGNED_INT, nullptr);
             break;
@@ -524,7 +539,18 @@ void renderNode(SceneNode *node, int renderMask)
         }
         case GEOMETRY_NORMAL_MAPPED:
         {
-            break;
+            GLuint mMatU = shader3D->getUniformFromName("mMat");
+            glUniformMatrix4fv(mMatU, 1, GL_FALSE, glm::value_ptr(node->currentTransformationMatrix));
+
+            GLuint isNormalMappedU = shader3D->getUniformFromName("isNormalMapped");
+            glUniform1i(isNormalMappedU, GL_TRUE);
+
+
+            glBindTextureUnit(0, node->imageTexture.ID);
+            glBindTextureUnit(1, node->normalMapTexture.ID);
+
+            glBindVertexArray(node->vertexArrayObjectID);
+            glDrawElements(GL_TRIANGLES, node->VAOIndexCount, GL_UNSIGNED_INT, nullptr);
         }
         }
     }
@@ -541,7 +567,7 @@ void renderFrame(GLFWwindow *window)
     glfwGetWindowSize(window, &windowWidth, &windowHeight);
     glViewport(0, 0, windowWidth, windowHeight);
     shader3D->activate();
-    renderNode(rootNode, GEOMETRY);
+    renderNode(rootNode, GEOMETRY | GEOMETRY_NORMAL_MAPPED);
     shader2D->activate();
     renderNode(rootNode, GEOMETRY_2D);
 }
