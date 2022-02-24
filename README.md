@@ -1,31 +1,5 @@
-# TDT4230 - Graphics and Visualization
+# TDT4230 Spring 2022 Excercises
 
-This is the base code for the NTNU subject TDT4230 assignments. It may also be used for the final project, which we will showcase [here](https://www.idi.ntnu.no/grupper/vis/teaching/)
+This is the repo I used to do the first two assignments in TDT4230 Graphics and Visualization.
 
-## What do i do?
-
-	git clone --recursive https://github.com/bartvbl/TDT4230-Assignment-1.git
-
-Should you forget the `--recursive` bit, just run:
-
-	git submodule update --init
-
-
-### Windows
-
-Install Microsoft Visual Studio Express and CMake.
-You may use CMake-gui or the command-line cmake to generate a Visual Studio solution.
-
-### Linux:
-
-Make sure you have a C/C++ compiler such as  GCC, CMake and Git.
-
-	make run
-
-which is equivalent to
-
-	git submodule update --init
-	cd build
-	cmake ..
-	make
-	./glowbox
+Feel free to use this as inspiration, but plagiarism is done at your own risk.
