@@ -516,6 +516,7 @@ void renderNode(SceneNode *node, int renderMask)
             if (node->vertexArrayObjectID == -1)
                 break;
             GLuint mMatU = shader2D->getUniformFromName("mMat");
+            glBindTextureUnit(0, node->imageTexture.ID);
             glUniformMatrix4fv(mMatU, 1, GL_FALSE, glm::value_ptr(node->currentTransformationMatrix));
             glBindVertexArray(node->vertexArrayObjectID);
             glDrawElements(GL_TRIANGLES, node->VAOIndexCount, GL_UNSIGNED_INT, nullptr);
