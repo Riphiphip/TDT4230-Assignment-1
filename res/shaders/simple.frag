@@ -46,7 +46,7 @@ const float lc = 0.001;
 
 void main()
 {
-    vec3 normal = isNormalMapped ? texture(normalMapSampler, textureCoordinates).xyz : normalize(normal_in);
+    vec3 normal = isNormalMapped ? (texture(normalMapSampler, textureCoordinates).xyz*2.0 - 1.0) : normalize(normal_in);
 
     vec3 ambientColour = isTextured ? texture(imageSampler, textureCoordinates).rgb: vec3(1.0);
 
