@@ -34,7 +34,6 @@ float dither(vec2 uv) { return (rand(uv)*2.0-1.0) / 256.0; }
 vec3 reject(vec3 from, vec3 onto) {return from - onto*dot(from, onto)/dot(onto, onto);}
 
 const float ambientCoef = 0.1;
-const vec3 ambientColour = vec3(1.0, 1.0, 1.0);
 
 const float diffuseCoef = 1.0;
 
@@ -50,6 +49,7 @@ void main()
     vec3 normal = isNormalMapped ? texture(normalMapSampler, textureCoordinates).xyz : normalize(normal_in);
 
     vec3 ambientColour = isTextured ? texture(imageSampler, textureCoordinates).rgb: vec3(1.0);
+
     vec3 ambient = ambientCoef * ambientColour;
     vec3 diffuse = vec3(0.0);
     vec3 specular = vec3(0.0);
@@ -65,7 +65,7 @@ void main()
 
         shouldReject = (length(rejectV) <= ballRadius) && !(length(fragLightV)<length(fragBallV)) && !(dot(fragLightV, fragBallV) < 0);
 
-        float rejectFactor = float(!shouldReject);
+        float rejectFactor = (light.colour == vec3(0.0)) ? 1.0 : float(!shouldReject);
 
         float distToLight = length(light.position - vec3(position));
         float attenuation = 1.0/(la + lb * distToLight + lc * pow(distToLight, 2));
