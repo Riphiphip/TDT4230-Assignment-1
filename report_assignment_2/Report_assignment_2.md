@@ -11,3 +11,6 @@ a) The perspective transformation does not preserve ratios between distances. Th
 b) A displacement map moves verticies around, but since the walls have almost no verticies the displacement map would not be able to do fine grained adjustment. To get some use for a displacement map the wall would need a higher degree of tesselation.
 
 c) When the rectangle is far away I would expect it to gain a green tint. This happens because most implementations of mipmaps do some sort of averaging across the image, and when sufficiently scaled down versions of the texture are used this averaging will have brought some green into the previously red area.
+
+## Task 3
+![Task 3](./Task3.png)
