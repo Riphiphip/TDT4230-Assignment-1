@@ -518,6 +518,9 @@ void renderNode(SceneNode *node, int renderMask)
 
             GLuint isNormalMappedU = shader3D->getUniformFromName("isNormalMapped");
             glUniform1i(isNormalMappedU, GL_FALSE);
+
+            GLuint isTexturedU = shader3D->getUniformFromName("isTextured");
+            glUniform1i(isTexturedU, GL_FALSE);
             glBindVertexArray(node->vertexArrayObjectID);
             glDrawElements(GL_TRIANGLES, node->VAOIndexCount, GL_UNSIGNED_INT, nullptr);
             break;
@@ -545,6 +548,8 @@ void renderNode(SceneNode *node, int renderMask)
             GLuint isNormalMappedU = shader3D->getUniformFromName("isNormalMapped");
             glUniform1i(isNormalMappedU, GL_TRUE);
 
+            GLuint isTexturedU = shader3D->getUniformFromName("isTextured");
+            glUniform1i(isTexturedU, GL_TRUE);
 
             glBindTextureUnit(0, node->imageTexture.ID);
             glBindTextureUnit(1, node->normalMapTexture.ID);

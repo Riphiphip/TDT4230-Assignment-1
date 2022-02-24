@@ -36,10 +36,10 @@ vec3 reject(vec3 from, vec3 onto) {return from - onto*dot(from, onto)/dot(onto, 
 const float ambientCoef = 0.1;
 const vec3 ambientColour = vec3(1.0, 1.0, 1.0);
 
-const float diffuseCoef = 0.3;
+const float diffuseCoef = 1.0;
 
-const int shininess = 32;
-const float specularCoef = 1.0;
+const int shininess = 8;
+const float specularCoef = 0.5;
 
 const float la = 0.001;
 const float lb = 0.001;
@@ -49,6 +49,7 @@ void main()
 {
     vec3 normal = isNormalMapped ? texture(normalMapSampler, textureCoordinates).xyz : normalize(normal_in);
 
+    vec3 ambientColour = isTextured ? texture(imageSampler, textureCoordinates).rgb: vec3(1.0);
     vec3 ambient = ambientCoef * ambientColour;
     vec3 diffuse = vec3(0.0);
     vec3 specular = vec3(0.0);
@@ -71,7 +72,8 @@ void main()
 
         vec3 lightDir = normalize(light.position - vec3(position));
         
-        diffuse += rejectFactor * attenuation * max(dot(normal, lightDir), 0.0) * light.colour * diffuseCoef;
+        vec3 diffuseCol = ambientColour;
+        diffuse += rejectFactor * attenuation * max(dot(normal, lightDir), 0.0) * diffuseCol * diffuseCoef;
 
         vec3 refLD = reflect(-lightDir, normal);
         vec3 viewDir = normalize(vec3(cameraPos-position));
