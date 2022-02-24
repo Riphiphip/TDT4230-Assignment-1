@@ -47,7 +47,8 @@ const float lc = 0.001;
 
 void main()
 {
-    vec3 normal = isNormalMapped ? tbn * (texture(normalMapSampler, textureCoordinates).xyz*2.0 - 1.0) : normalize(normal_in);
+    vec3 normal = isNormalMapped ? tbn * (texture(normalMapSampler, textureCoordinates).xyz*2.0 - 1.0) : normal_in;
+    normal = normalize(normal);
 
     vec3 ambientColour = isTextured ? texture(imageSampler, textureCoordinates).rgb: vec3(1.0);
 
@@ -84,5 +85,4 @@ void main()
 
 
     color = vec4(ambient + diffuse + specular + dither(textureCoordinates), 1.0);
-    // color = vec4(normal, 1.0);
 }

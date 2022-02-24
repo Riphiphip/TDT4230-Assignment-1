@@ -544,6 +544,10 @@ void renderNode(SceneNode *node, int renderMask)
         {
             GLuint mMatU = shader3D->getUniformFromName("mMat");
             glUniformMatrix4fv(mMatU, 1, GL_FALSE, glm::value_ptr(node->currentTransformationMatrix));
+            
+            glm::mat3 normalMat = glm::transpose(glm::inverse(glm::mat3(node->currentTransformationMatrix)));
+            GLuint normalMatU = shader3D->getUniformFromName("normalMat");
+            glUniformMatrix3fv(normalMatU, 1, GL_FALSE, glm::value_ptr(normalMat));
 
             GLuint isNormalMappedU = shader3D->getUniformFromName("isNormalMapped");
             glUniform1i(isNormalMappedU, GL_TRUE);
