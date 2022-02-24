@@ -33,7 +33,7 @@ float dither(vec2 uv) { return (rand(uv)*2.0-1.0) / 256.0; }
 
 vec3 reject(vec3 from, vec3 onto) {return from - onto*dot(from, onto)/dot(onto, onto);}
 
-const float ambientCoef = 0.1;
+const float ambientCoef = 0.3;
 
 const float diffuseCoef = 1.0;
 
